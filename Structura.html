@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Structura Web</title>
+<style>
+    body { font-family: Arial, sans-serif; background: #1e1e1e; color: #ddd; padding: 20px; }
+    textarea { width: 100%; height: 200px; background: #2e2e2e; color: #ddd; border: none; padding: 10px; font-family: monospace; }
+    ul { list-style-type: none; padding-left: 20px; }
+    li { cursor: pointer; }
+    .folder::before { content: "📁 "; }
+    .hidden { display: none; }
+    button { padding: 10px 15px; margin-top: 10px; background: #444; color: #ddd; border: none; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<h1>Structura Web</h1>
+<textarea id="input" placeholder="Enter folder structure here..."></textarea>
+<button onclick="generateTree()">Generate Tree</button>
+<div id="tree"></div>
+
+<script>
+function parseStructura(input) {
+    const lines = input.split('\n').filter(line => line.trim() !== '');
+    const root = [];
+    const stack = [{level: -1, children: root}];
+
+    lines.forEach(line => {
+        const match = line.match(/^(\-+|->+|>+)?(.*)$/);
+        if (!match) return;
+        let level = match[1] ? match[1].length : 0;
+        let name = match[2].trim().replace(/[<>[\]]/g, '');
+        const node = { name, children: [] };
+
+        while (stack.length && stack[stack.length - 1].level >= level) stack.pop();
+        stack[stack.length - 1].children.push(node);
+        stack.push({level, children: node.children});
+    });
+
+    return root;
+}
+
+function buildTreeHTML(nodes) {
+    if (!nodes || nodes.length === 0) return '';
+    const ul = document.createElement('ul');
+    nodes.forEach(node => {
+        const li = document.createElement('li');
+        li.textContent = node.name;
+        li.classList.add('folder');
+        li.onclick = (e) => {
+            e.stopPropagation();
+            const childUl = li.querySelector('ul');
+            if (childUl) childUl.classList.toggle('hidden');
+        };
+        const childrenHTML = buildTreeHTML(node.children);
+        if (childrenHTML) li.appendChild(childrenHTML);
+        ul.appendChild(li);
+    });
+    return ul;
+}
+
+function generateTree() {
+    const input = document.getElementById('input').value;
+    const structure = parseStructura(input);
+    const treeContainer = document.getElementById('tree');
+    treeContainer.innerHTML = '';
+    const treeHTML = buildTreeHTML(structure);
+    treeContainer.appendChild(treeHTML);
+}
+</script>
+
+</body>
+</html>

@@ -3,372 +3,557 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Structura - Folder Structure Builder</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <title>Structura Web - Folder Structure Creator</title>
     <style>
-        :root {
-            /* Structura Colors */
-            --bg-primary: #1e1e1e;
-            --bg-secondary: #252526;
-            --bg-panel: #2d2d30;
-            --accent: #6366f1; /* Indigo 500 */
-            --text-light: #ffffff;
-            --text-muted: #a1a1aa; /* Zinc 400 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-primary);
-            color: var(--text-light);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        /* Custom scrollbar for dark theme */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #212121;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
         }
 
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #555;
-            border-radius: 4px;
+        .header {
+            background: #1a1a1a;
+            padding: 20px 30px;
+            border-bottom: 1px solid #3a3a3d;
         }
 
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background-color: #333;
-        }
-
-        /* Folder Structure Item Styling */
-        .folder-item {
-            padding: 4px 8px;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.15s;
-        }
-
-        .folder-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .folder-item.selected {
-            background-color: var(--accent);
-            color: var(--text-light);
-        }
-
-        /* Saved Structures List Item */
-        .saved-structure-item {
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: background-color 0.15s, border-color 0.15s;
-            border-left: 3px solid transparent;
-        }
-        
-        .saved-structure-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .saved-structure-item.active {
-            background-color: rgba(99, 102, 241, 0.2); /* Light indigo background */
-            border-left: 3px solid var(--accent);
+        .header h1 {
+            font-size: 24px;
             font-weight: 600;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header p {
+            color: #888;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 0;
+            min-height: 500px;
+        }
+
+        .sidebar {
+            background: #1c1c1c;
+            border-right: 1px solid #3a3a3d;
+            padding: 20px;
+        }
+
+        .editor {
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ccc;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background: #2a2a2a;
+            border: 1px solid #3a3a3d;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 13px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #5a8daa;
+            background: #303030;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3a6d8a 0%, #2a4d6a 100%);
+            color: white;
+            border: 1px solid #5a8daa;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4a7d9a 0%, #3a5d7a 100%);
+            box-shadow: 0 0 20px rgba(90, 141, 170, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #3c5a3c 0%, #32412c 100%);
+            color: white;
+            border: 1px solid #3a6d3a;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #4a6a4a 0%, #3c5a3c 100%);
+        }
+
+        .btn-secondary {
+            background: #2a2a2a;
+            color: #ccc;
+            border: 1px solid #3a3a3d;
+        }
+
+        .btn-secondary:hover {
+            background: #3a3a3a;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .tree-view {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3d;
+            border-radius: 4px;
+            padding: 15px;
+            min-height: 300px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .tree-item {
+            padding: 8px 12px;
+            margin: 2px 0;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .tree-item:hover {
+            background: #2a2a2a;
+        }
+
+        .tree-item.selected {
+            background: #404040;
+            color: white;
+        }
+
+        .tree-children {
+            margin-left: 20px;
+        }
+
+        .folder-icon {
+            font-size: 14px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+            opacity: 0.3;
+        }
+
+        .footer {
+            background: #1a1a1a;
+            padding: 15px 30px;
+            border-top: 1px solid #3a3a3d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .status.success {
+            color: #5a9a5a;
+        }
+
+        .status.error {
+            color: #d66;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #777;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #3a3a3d;
+            }
         }
     </style>
 </head>
-<body class="selection:bg-indigo-700 selection:text-white">
-
-    <!-- Top Header Bar -->
-    <header class="bg-bg-secondary p-2 flex items-center justify-between shadow-lg border-b border-gray-700">
-        <h1 class="text-xl font-bold tracking-widest text-white uppercase">Structura</h1>
-        <div class="flex items-center space-x-4">
-            <button class="text-gray-300 hover:text-white">
-                <!-- Minimize Icon (Placeholder) -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-            </button>
-            <button class="text-gray-300 hover:text-white">
-                <!-- Maximize/Restore Icon (Placeholder) -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect></svg>
-            </button>
-            <button class="text-gray-300 hover:text-red-500">
-                <!-- Close Icon (Placeholder) -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-            </button>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>📁</span>
+                Structura Web
+            </h1>
+            <p>Create and export folder structures</p>
         </div>
-    </header>
 
-    <!-- Navigation/File Path Bar -->
-    <div class="bg-bg-panel p-2 flex items-center justify-between border-b border-gray-800">
-        <div class="flex items-center space-x-2">
-            <span class="text-sm font-mono text-gray-300 ml-2">G:\STRUCTURA DEMO</span>
-            <select class="bg-gray-700 text-sm text-white rounded-md p-1 focus:ring-indigo-500 focus:border-indigo-500">
-                <option>Video Projects</option>
-                <option>Code Repos</option>
-            </select>
-            <button class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-1 px-3 rounded-md">
-                Browse...
-            </button>
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="section-title">Quick Add</div>
+                <div class="input-group">
+                    <label>Folder Name</label>
+                    <input type="text" id="folderName" placeholder="Enter folder name...">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="addFolder()">
+                        ✚ Add
+                    </button>
+                    <button class="btn btn-secondary" onclick="removeSelected()">
+                        ➖ Remove
+                    </button>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <div class="section-title">Bulk Add (Text)</div>
+                    <div class="input-group">
+                        <label>Paste folder structure (one per line, use indentation)</label>
+                        <textarea id="bulkInput" placeholder="ProjectRoot&#10;  src&#10;    components&#10;    utils&#10;  public&#10;  docs"></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="parseStructure()">
+                        📝 Parse Structure
+                    </button>
+                </div>
+            </div>
+
+            <div class="editor">
+                <div class="section-title">Folder Structure</div>
+                <div class="tree-view" id="treeView">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📂</div>
+                        <p>Add folders to get started</p>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="margin-top: 20px;">
+                    <button class="btn btn-primary" onclick="exportStructure()">
+                        📤 Export .struct
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearAll()">
+                        ✖ Clear All
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="flex items-center space-x-4">
-            <span class="text-sm text-gray-400">Structure Management</span>
-            <button class="text-gray-300 hover:text-white">
-                <!-- Menu Icon (Placeholder) -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
+
+        <div class="footer">
+            <div class="status" id="status">Ready</div>
+            <div style="font-size: 11px; color: #666;">
+                Structura Web - Folder Structure Creator
+            </div>
         </div>
     </div>
 
-    <!-- Main Content Area (Mobile stacks, Desktop side-by-side) -->
-    <main class="flex-grow flex flex-col lg:flex-row custom-scrollbar overflow-hidden">
-        
-        <!-- 1. Folder Structure Panel (Left/Top) -->
-        <div class="flex-1 min-h-64 bg-bg-secondary p-4 flex flex-col border-r border-gray-800 lg:w-3/4 w-full">
-            <h2 class="text-lg font-semibold mb-3 text-white border-b border-gray-700 pb-2">Folder Structure</h2>
-            
-            <!-- Folder Tree Container -->
-            <div id="folder-tree-container" class="flex-grow overflow-y-auto custom-scrollbar p-1 text-sm">
-                <!-- Folder items generated here -->
-                <div class="text-gray-500 text-center py-8" id="empty-message">No structure defined. Click '+' to add a folder.</div>
-            </div>
-
-            <!-- Folder Controls -->
-            <div class="mt-4 flex justify-center space-x-4 p-2 bg-bg-panel rounded-lg">
-                <button id="add-folder-btn" class="text-white bg-green-600 hover:bg-green-700 p-3 rounded-full shadow-lg transition-all duration-200">
-                    <!-- Plus Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <button id="delete-folder-btn" class="text-white bg-red-600 hover:bg-red-700 p-3 rounded-full shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                    <!-- Minus Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                </button>
-                <button id="clear-all-btn" class="text-white bg-gray-600 hover:bg-gray-700 p-3 rounded-full shadow-lg transition-all duration-200">
-                    <!-- X Icon -->
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- 2. Saved Structures Sidebar (Right/Bottom) -->
-        <div class="lg:w-1/4 w-full bg-bg-panel flex flex-col shadow-inner">
-            <h2 class="text-lg font-semibold p-4 border-b border-gray-700">Saved Structures</h2>
-            <div id="saved-structures-list" class="flex-grow overflow-y-auto custom-scrollbar">
-                <!-- Saved items generated here -->
-            </div>
-        </div>
-    </main>
-
-    <!-- Bottom Footer Bar -->
-    <footer class="bg-bg-panel p-3 flex items-center justify-between border-t border-gray-800">
-        <div class="flex items-center space-x-4">
-            <button class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-md text-sm transition-colors">
-                + Add Mode
-            </button>
-            <button class="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-md text-sm transition-colors">
-                Structure Editor
-            </button>
-        </div>
-        <button class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg shadow-xl transition-transform transform hover:scale-[1.02] active:scale-95">
-            CREATE
-        </button>
-        <span class="text-xs text-gray-500 hidden sm:block">Structura Version 2.5 - 2025 ©DeskLabs</span>
-    </footer>
-
     <script>
-        const folderTreeContainer = document.getElementById('folder-tree-container');
-        const savedStructuresList = document.getElementById('saved-structures-list');
-        const addFolderBtn = document.getElementById('add-folder-btn');
-        const deleteFolderBtn = document.getElementById('delete-folder-btn');
-        const clearAllBtn = document.getElementById('clear-all-btn');
-        const emptyMessage = document.getElementById('empty-message');
+        let structure = [];
+        let selectedItem = null;
 
-        // --- Data Models ---
-
-        // Simple ID counter for new folders
-        let nextFolderId = 1;
-        
-        // Current Folder Structure (flat array for simplicity, matching the visual list)
-        let currentStructure = [];
-        let selectedFolderId = null;
-
-        // Dummy Saved Structures Data
-        const savedStructures = [
-            { id: 'st1', name: 'Editing Project ST-1', icon: '🎥' },
-            { id: 'vs', name: 'Visual Studio App', icon: '💻' },
-            { id: 'mp1', name: 'Music Project 1', icon: '🎵' },
-            { id: 'mac', name: 'MacOS App', icon: '🍎' },
-            { id: 'psd', name: 'Photoshop Folder', icon: '🖼️' },
-            { id: 'test', name: 'skibbidi test', icon: '🚽' },
-        ];
-        
-        // --- Core Functions ---
-
-        /**
-         * Renders the current structure array to the DOM.
-         */
-        function renderFolderStructure() {
-            folderTreeContainer.innerHTML = '';
-            deleteFolderBtn.disabled = true;
-
-            if (currentStructure.length === 0) {
-                emptyMessage.style.display = 'block';
-                return;
-            } else {
-                emptyMessage.style.display = 'none';
-            }
-
-            currentStructure.forEach(item => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = `folder-item flex items-center ${item.id === selectedFolderId ? 'selected' : ''}`;
-                itemDiv.dataset.id = item.id;
-
-                // Simple icon representation (Folder emoji)
-                const icon = '<span class="mr-2 text-yellow-400">📁</span>';
-                
-                // Emulate the structure numbering/title
-                const content = `<span class="text-gray-400 mr-2">${item.index < 10 ? '0' : ''}${item.index}.</span> 
-                                 <span class="text-white">${item.name}</span>`;
-
-                itemDiv.innerHTML = icon + content;
-                
-                itemDiv.addEventListener('click', () => selectFolder(item.id));
-                folderTreeContainer.appendChild(itemDiv);
-            });
-
-            // Re-enable delete button if something is selected
-            if (selectedFolderId !== null) {
-                deleteFolderBtn.disabled = false;
-            }
-        }
-
-        /**
-         * Renders the list of saved structure templates.
-         */
-        function renderSavedStructures() {
-            savedStructuresList.innerHTML = '';
-            savedStructures.forEach((structure, index) => {
-                const itemDiv = document.createElement('div');
-                // Highlight the first item like in the screenshot
-                const isActive = index === 0; 
-                itemDiv.className = `saved-structure-item flex items-center text-sm text-gray-200 ${isActive ? 'active' : ''}`;
-                itemDiv.innerHTML = `<span class="text-lg mr-2">${structure.icon}</span> 
-                                     <span class="text-gray-400 mr-1">${isActive ? 'S' : ''}</span> 
-                                     <span>${structure.name}</span>`;
-                
-                // Add click listener to load the structure (dummy implementation)
-                itemDiv.addEventListener('click', () => loadStructure(structure));
-                savedStructuresList.appendChild(itemDiv);
-            });
-        }
-
-        /**
-         * Selects a folder item.
-         * @param {number} id - The ID of the folder to select.
-         */
-        function selectFolder(id) {
-            selectedFolderId = id;
-            renderFolderStructure();
-        }
-
-        /**
-         * Adds a new folder to the structure.
-         */
         function addFolder() {
-            const newName = prompt("Enter new folder name (e.g., 'Textures' or 'Models'):");
-            if (newName) {
-                const newFolder = {
-                    id: nextFolderId++,
-                    name: newName,
-                    index: currentStructure.length + 1,
-                    type: "folder",
-                    children: []
-                };
-                currentStructure.push(newFolder);
-                // Renumber the indices
-                currentStructure.forEach((item, idx) => item.index = idx + 1);
-                renderFolderStructure();
-            }
-        }
-
-        /**
-         * Deletes the currently selected folder.
-         */
-        function deleteFolder() {
-            if (selectedFolderId !== null) {
-                currentStructure = currentStructure.filter(item => item.id !== selectedFolderId);
-                selectedFolderId = null;
-                // Renumber the indices after deletion
-                currentStructure.forEach((item, idx) => item.index = idx + 1);
-                renderFolderStructure();
-            }
-        }
-
-        /**
-         * Clears all folders from the structure.
-         */
-        function clearAll() {
-            const confirmation = window.confirm("Are you sure you want to clear the entire folder structure?");
-            if (confirmation) {
-                currentStructure = [];
-                selectedFolderId = null;
-                nextFolderId = 1;
-                renderFolderStructure();
-            }
-        }
-
-        /**
-         * Dummy function to load a saved structure.
-         */
-        function loadStructure(structure) {
-            // Simple mock load functionality
-            const mockData = [
-                { id: 101, name: `Template: ${structure.name}`, type: "folder", children: [] },
-                { id: 102, name: `Assets`, type: "folder", children: [] },
-                { id: 103, name: `Source Files`, type: "folder", children: [] }
-            ];
+            const input = document.getElementById('folderName');
+            const name = input.value.trim();
             
-            currentStructure = mockData.map((item, index) => ({
-                ...item,
-                index: index + 1
-            }));
-            nextFolderId = 104; // Reset counter higher than mock data
-            selectedFolderId = null;
-            renderFolderStructure();
+            if (!name) {
+                setStatus('Please enter a folder name', 'error');
+                return;
+            }
 
-            // Custom message box replacement for alert()
-            const msgBox = document.createElement('div');
-            msgBox.className = 'fixed top-4 right-4 bg-indigo-800 text-white p-3 rounded-lg shadow-2xl z-50 transition-opacity duration-300';
-            msgBox.textContent = `Loaded structure: "${structure.name}"`;
-            document.body.appendChild(msgBox);
+            // Check for invalid characters
+            const invalidChars = /[<>:"/\\|?*]/g;
+            if (invalidChars.test(name)) {
+                setStatus('Folder name contains invalid characters', 'error');
+                return;
+            }
 
-            setTimeout(() => {
-                msgBox.style.opacity = '0';
-                setTimeout(() => msgBox.remove(), 300);
-            }, 2500);
+            const folder = {
+                name: name,
+                children: [],
+                iconPath: "",
+                iconIndex: 0
+            };
+
+            if (selectedItem) {
+                selectedItem.children.push(folder);
+            } else {
+                structure.push(folder);
+            }
+
+            input.value = '';
+            renderTree();
+            setStatus(`Added folder: ${name}`, 'success');
         }
 
-        // --- Event Listeners and Initialization ---
+        function parseStructure() {
+            const input = document.getElementById('bulkInput');
+            const text = input.value;
+            
+            if (!text.trim()) {
+                setStatus('Please enter some folder structure', 'error');
+                return;
+            }
 
-        addFolderBtn.addEventListener('click', addFolder);
-        deleteFolderBtn.addEventListener('click', deleteFolder);
-        clearAllBtn.addEventListener('click', clearAll);
+            try {
+                const parsed = parseIndentedStructure(text);
+                structure = parsed;
+                renderTree();
+                input.value = '';
+                setStatus(`Parsed ${countFolders(structure)} folders`, 'success');
+            } catch (e) {
+                setStatus('Error parsing structure: ' + e.message, 'error');
+            }
+        }
 
-        // Initial rendering
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize with the original folders from the screenshot
-            currentStructure = [
-                { id: 1, index: 1, name: "Source Footage", type: "folder", children: [] },
-                { id: 2, index: 2, name: "Audio", type: "folder", children: [] },
-                { id: 3, index: 3, name: "Projects", type: "folder", children: [] },
-                { id: 4, index: 4, name: "Exports", type: "folder", children: [] },
-                { id: 5, index: 5, name: "Graphics", type: "folder", children: [] },
-                { id: 6, index: 6, name: "Misc", type: "folder", children: [] },
-            ];
-            nextFolderId = 7; 
-            renderFolderStructure();
-            renderSavedStructures();
+        function parseIndentedStructure(text) {
+            const lines = text.split('\n').filter(line => line.trim());
+            const root = [];
+            const stack = [{ level: -1, children: root }];
+
+            lines.forEach(line => {
+                const match = line.match(/^(\s*)(.*)/);
+                const indent = match[1].length;
+                const name = match[2].trim();
+
+                if (!name) return;
+
+                const level = Math.floor(indent / 2); // 2 spaces = 1 level
+                const folder = { name, children: [], iconPath: "", iconIndex: 0 };
+
+                // Pop stack until we find the parent
+                while (stack.length > 1 && stack[stack.length - 1].level >= level) {
+                    stack.pop();
+                }
+
+                stack[stack.length - 1].children.push(folder);
+                stack.push({ level, children: folder.children });
+            });
+
+            return root;
+        }
+
+        function countFolders(nodes) {
+            let count = nodes.length;
+            nodes.forEach(node => {
+                count += countFolders(node.children);
+            });
+            return count;
+        }
+
+        function renderTree() {
+            const treeView = document.getElementById('treeView');
+            
+            if (structure.length === 0) {
+                treeView.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📂</div>
+                        <p>Add folders to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            treeView.innerHTML = '';
+            renderNodes(structure, treeView);
+        }
+
+        function renderNodes(nodes, container) {
+            nodes.forEach((node, index) => {
+                const item = document.createElement('div');
+                item.className = 'tree-item';
+                if (selectedItem === node) {
+                    item.classList.add('selected');
+                }
+                
+                item.innerHTML = `
+                    <span class="folder-icon">📁</span>
+                    <span>${node.name}</span>
+                `;
+                
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    selectedItem = node;
+                    renderTree();
+                };
+
+                container.appendChild(item);
+
+                if (node.children && node.children.length > 0) {
+                    const childContainer = document.createElement('div');
+                    childContainer.className = 'tree-children';
+                    container.appendChild(childContainer);
+                    renderNodes(node.children, childContainer);
+                }
+            });
+        }
+
+        function removeSelected() {
+            if (!selectedItem) {
+                setStatus('No folder selected', 'error');
+                return;
+            }
+
+            const name = selectedItem.name;
+            removeNode(structure, selectedItem);
+            selectedItem = null;
+            renderTree();
+            setStatus(`Removed folder: ${name}`, 'success');
+        }
+
+        function removeNode(nodes, target) {
+            for (let i = 0; i < nodes.length; i++) {
+                if (nodes[i] === target) {
+                    nodes.splice(i, 1);
+                    return true;
+                }
+                if (removeNode(nodes[i].children, target)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function clearAll() {
+            if (structure.length === 0) {
+                setStatus('Nothing to clear', 'error');
+                return;
+            }
+
+            if (confirm('Clear all folders?')) {
+                structure = [];
+                selectedItem = null;
+                renderTree();
+                setStatus('Cleared all folders', 'success');
+            }
+        }
+
+        function exportStructure() {
+            if (structure.length === 0) {
+                setStatus('No structure to export', 'error');
+                return;
+            }
+
+            const structFile = {
+                name: "WebStructure",
+                version: "1.0",
+                createdDate: new Date().toISOString(),
+                createdBy: "Structura Web",
+                rootFolders: structure
+            };
+
+            const json = JSON.stringify(structFile, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'structure.struct';
+            a.click();
+            
+            URL.revokeObjectURL(url);
+            setStatus('Exported structure.struct', 'success');
+        }
+
+        function setStatus(message, type = '') {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = 'status ' + type;
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.id === 'folderName') {
+                addFolder();
+            }
+            if (e.key === 'Delete' && selectedItem) {
+                removeSelected();
+            }
         });
+
+        // Initialize
+        renderTree();
     </script>
 </body>
 </html>
-

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeskTube Web Mockup</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Use Inter font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Custom Dark Scrollbar for better aesthetic matching the image */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #4b5563; /* Gray 600 */
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: #1f2937; /* Gray 800 */
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-bg': '#1f2937', // Dark Gray 800
+                        'secondary-bg': '#111827', // Dark Gray 900
+                        'card-bg': '#374151', // Gray 700
+                        'accent': '#3b82f6', // Blue 500
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-secondary-bg text-gray-200 min-h-screen p-4 flex items-center justify-center">
+
+    <!-- Main Application Container (Desktop-like Window) -->
+    <div id="app-window" class="w-full max-w-6xl h-[90vh] bg-primary-bg rounded-xl shadow-2xl flex flex-col overflow-hidden border border-gray-700/50">
+
+        <!-- Window Header/Title Bar (Visual only) -->
+        <header class="flex items-center justify-between p-2 px-4 bg-gray-900 border-b border-gray-700/50 text-xs text-gray-400">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17.5v-10h19v10h-19z"/><path d="M12 21v-3.5"/><path d="M7 21h10"/></svg>
+                <span>DESKTUBE</span>
+            </div>
+            <div class="flex space-x-2">
+                <button class="w-6 h-6 hover:bg-gray-700 rounded-md transition duration-150" title="Minimize">—</button>
+                <button class="w-6 h-6 hover:bg-gray-700 rounded-md transition duration-150" title="Maximize">□</button>
+                <button class="w-6 h-6 hover:bg-red-600 rounded-md transition duration-150 text-red-400 hover:text-white" title="Close">X</button>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="flex flex-1 overflow-hidden">
+            
+            <!-- Left Panel: Download Interface -->
+            <div class="flex flex-col w-full lg:w-3/5 p-4 space-y-4 border-r border-gray-700/50 overflow-y-auto custom-scrollbar">
+                
+                <!-- URL Input and Settings Icon -->
+                <div class="flex items-center space-x-2">
+                    <input id="url-input" type="url" placeholder="Paste YouTube link here..."
+                           class="flex-1 p-3 bg-gray-700/50 border border-gray-600 rounded-lg focus:ring-accent focus:border-accent outline-none text-sm text-gray-200"
+                           value="https://www.youtube.com/watch?v=mock_video_id">
+                    <button class="p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-400 transition duration-150" title="Settings">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </button>
+                </div>
+
+                <!-- Video Preview Box -->
+                <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 space-y-3">
+                    <div class="flex items-center justify-between text-xs font-semibold text-gray-400">
+                        <span>Video Preview</span>
+                        <button class="text-accent hover:underline">▲ Hide</button>
+                    </div>
+                    
+                    <div class="flex space-x-4">
+                        <!-- Simulated Thumbnail -->
+                        <div class="w-36 h-20 bg-gray-700 rounded-lg overflow-hidden flex-shrink-0 relative">
+                            <img id="video-thumbnail" src="https://placehold.co/144x80/2f3a4b/ffffff?text=Video+Thumbnail" 
+                                 onerror="this.src='https://placehold.co/144x80/2f3a4b/ffffff?text=Video+Thumbnail';" 
+                                 alt="Video Thumbnail" class="w-full h-full object-cover">
+                            <div class="absolute bottom-1 right-1 bg-black bg-opacity-70 text-white text-xs px-1 rounded">2:45</div>
+                        </div>
+                        
+                        <!-- Video Info -->
+                        <div class="flex flex-col justify-center">
+                            <p id="video-title" class="text-lg font-bold text-gray-100">Video Title Example: How to Mock a UI</p>
+                            <p id="video-duration" class="text-sm text-gray-400">Duration: 2:45</p>
+                            <p id="video-channel" class="text-sm text-gray-400">Channel: Tech Mockups Inc.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quality and Format Dropdowns -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Quality/Stream Type -->
+                    <div class="space-y-1">
+                        <label for="quality-select" class="text-sm text-gray-400">Best (Default)</label>
+                        <select id="quality-select" class="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-sm appearance-none focus:ring-accent focus:border-accent">
+                            <option value="best">Best (Default)</option>
+                            <option value="4k">4K Ultra HD</option>
+                            <option value="1080p">1080p Full HD</option>
+                            <option value="720p">720p HD</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+                        </div>
+                    </div>
+
+                    <!-- Video Format -->
+                    <div class="space-y-1">
+                        <label for="format-select" class="text-sm text-gray-400">MP4 (Default)</label>
+                        <select id="format-select" class="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-sm appearance-none focus:ring-accent focus:border-accent">
+                            <option value="mp4">MP4 (Default)</option>
+                            <option value="webm">WebM</option>
+                            <option value="mp3">MP3 (Audio Only)</option>
+                            <option value="mkv">MKV</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" fill-rule="evenodd"></path></svg>
+                        </div>
+                    </div>
+
+                    <!-- Frame Rate and Checkboxes -->
+                    <div class="space-y-1">
+                        <label class="text-sm text-gray-400">Frame Rate</label>
+                        <select id="framerate-select" class="w-full p-3 bg-gray-700/50 border border-gray-600 rounded-lg text-sm appearance-none focus:ring-accent focus:border-accent">
+                            <option value="highest">Highest (Default)</option>
+                            <option value="30">30 fps</option>
+                            <option value="60">60 fps</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col space-y-2 pt-2">
+                        <label class="flex items-center text-sm text-gray-200">
+                            <input type="checkbox" checked class="form-checkbox h-4 w-4 text-accent bg-gray-700 border-gray-600 rounded-md focus:ring-0">
+                            <span class="ml-2">Download Thumbnail</span>
+                        </label>
+                        <label class="flex items-center text-sm text-gray-200">
+                            <input type="checkbox" class="form-checkbox h-4 w-4 text-accent bg-gray-700 border-gray-600 rounded-md focus:ring-0">
+                            <span class="ml-2">Thumbnail Only (no video)</span>
+                        </label>
+                    </div>
+                </div>
+
+
+                <!-- Folder Selection -->
+                <div class="space-y-2 pt-4">
+                    <label class="text-sm text-gray-400 block">Select Download Folder</label>
+                    <div class="flex items-center space-x-2 bg-gray-800 p-3 rounded-lg border border-gray-700">
+                        <button id="select-folder-btn" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-100 text-sm font-semibold rounded-lg transition duration-150">
+                            Select Folder
+                        </button>
+                        <span id="folder-path" class="text-sm text-gray-400 truncate">C:\Users\User\Videos\DeskTubeDownloads</span>
+                    </div>
+                </div>
+
+                <!-- Download Button -->
+                <div class="pt-6">
+                    <button id="download-button" class="w-full py-4 bg-accent hover:bg-blue-600 text-white font-bold text-lg rounded-xl shadow-lg shadow-blue-500/30 transition duration-300 transform hover:scale-[1.01] flex items-center justify-center disabled:bg-gray-500 disabled:shadow-none" disabled>
+                        <svg id="download-icon" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span id="download-text">Download</span>
+                    </button>
+                </div>
+
+                <!-- Status Message / Disclaimer -->
+                <div class="text-center text-xs text-red-400 pt-4">
+                    <p class="font-bold">Disclaimer: Actual video downloading requires a dedicated server-side API, which cannot be implemented in this client-side web mockup.</p>
+                    <p>The "Download" button above runs a **simulated** download and updates the list.</p>
+                </div>
+
+                <!-- Footer Text -->
+                <div class="text-center text-xs text-gray-500 pt-4">
+                    DeskTube Version 1.7.0 - 2025 &copy; Mockingbird
+                    <br>(Built for personal use only)
+                </div>
+
+            </div>
+
+            <!-- Right Panel: Recent Downloads -->
+            <div class="w-full lg:w-2/5 flex flex-col p-4 space-y-4 bg-gray-800/50 overflow-y-auto custom-scrollbar">
+                
+                <h2 class="text-sm font-semibold text-gray-300 sticky top-0 bg-gray-800/50 py-1 z-10 border-b border-gray-700">Recent Downloads</h2>
+
+                <!-- Download List Container -->
+                <div id="recent-downloads-list" class="space-y-3 flex-1">
+                    <!-- Initial Mock Items -->
+                    <div class="download-item bg-gray-800 p-3 rounded-lg border border-gray-700 flex items-start space-x-3 transition duration-150 hover:bg-gray-700/50">
+                        <div class="w-16 h-10 bg-gray-600 rounded flex-shrink-0">
+                             <img src="https://placehold.co/64x40/374151/ffffff?text=MP4" alt="Placeholder" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-100 truncate">Iris by Goo Goo Dolls | acoustic cover by Jada Facer</p>
+                            <div class="flex items-center text-xs text-gray-400 space-x-2">
+                                <span>MP4</span>
+                                <span>|</span>
+                                <span>19.7 MB</span>
+                                <span>|</span>
+                                <span>11/21</span>
+                            </div>
+                            <div class="flex space-x-2 mt-1">
+                                <button class="text-xs text-accent hover:text-blue-400 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Open
+                                </button>
+                                <button class="text-xs text-yellow-500 hover:text-yellow-400 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg> Show
+                                </button>
+                            </div>
+                        </div>
+                        <button class="text-gray-500 hover:text-gray-300 transition duration-150">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Clear History Button -->
+                <div class="mt-auto pt-4 border-t border-gray-700/50">
+                    <button id="clear-history-btn" class="w-full text-center text-sm text-red-500 hover:text-red-400 py-2 rounded-lg transition duration-150">
+                        Clear History
+                    </button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals and Message Box -->
+    <div id="modal-container" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 hidden items-center justify-center">
+        <div id="message-box" class="bg-gray-800 p-6 rounded-lg shadow-xl max-w-sm w-full space-y-4 border border-gray-700 transform transition-all scale-100">
+            <h3 id="modal-title" class="text-xl font-bold text-gray-100">Notification</h3>
+            <p id="modal-message" class="text-gray-300"></p>
+            <div class="flex justify-end">
+                <button onclick="closeModal()" class="px-4 py-2 bg-accent hover:bg-blue-600 text-white rounded-lg font-semibold transition duration-150">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const downloadButton = document.getElementById('download-button');
+            const downloadText = document.getElementById('download-text');
+            const urlInput = document.getElementById('url-input');
+            const recentDownloadsList = document.getElementById('recent-downloads-list');
+            const clearHistoryBtn = document.getElementById('clear-history-btn');
+            const videoTitleEl = document.getElementById('video-title');
+            const videoDurationEl = document.getElementById('video-duration');
+            const videoChannelEl = document.getElementById('video-channel');
+            const videoThumbnailEl = document.getElementById('video-thumbnail');
+            const formatSelect = document.getElementById('format-select');
+
+            // --- Mock Data and Initialization ---
+            const mockVideoData = {
+                title: "DeskTube UI Mockup Demonstration",
+                duration: "8:05",
+                channel: "Frontend Dev Channel",
+                size: "15.3",
+                date: new Date().toLocaleDateString('en-US', { month: '2-digit', day: '2-digit' }).replace(/\//g, '/').slice(0, -3), // Format MM/DD
+                formats: {
+                    'mp4': 'MP4', 'webm': 'WebM', 'mp3': 'MP3', 'mkv': 'MKV'
+                }
+            };
+            
+            // Initial UI update from mock data
+            videoTitleEl.textContent = mockVideoData.title;
+            videoDurationEl.textContent = `Duration: ${mockVideoData.duration}`;
+            videoChannelEl.textContent = `Channel: ${mockVideoData.channel}`;
+            downloadButton.disabled = false; // Enable button initially
+
+            // --- Utility Functions ---
+
+            function showModal(title, message) {
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-message').textContent = message;
+                document.getElementById('modal-container').classList.remove('hidden');
+                document.getElementById('modal-container').classList.add('flex');
+            }
+
+            window.closeModal = function() {
+                document.getElementById('modal-container').classList.add('hidden');
+                document.getElementById('modal-container').classList.remove('flex');
+            }
+            
+            // --- UI Rendering ---
+
+            function createDownloadItem(title, format, size, date) {
+                return `
+                    <div class="download-item bg-gray-800 p-3 rounded-lg border border-gray-700 flex items-start space-x-3 transition duration-150 hover:bg-gray-700/50">
+                        <div class="w-16 h-10 bg-gray-600 rounded flex-shrink-0">
+                             <img src="https://placehold.co/64x40/374151/ffffff?text=${format}" alt="${format} Placeholder" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-100 truncate">${title}</p>
+                            <div class="flex items-center text-xs text-gray-400 space-x-2">
+                                <span>${format}</span>
+                                <span>|</span>
+                                <span>${size} MB</span>
+                                <span>|</span>
+                                <span>${date}</span>
+                            </div>
+                            <div class="flex space-x-2 mt-1">
+                                <button onclick="showModal('File Operation', 'Simulating file opening...')" class="text-xs text-accent hover:text-blue-400 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg> Open
+                                </button>
+                                <button onclick="showModal('File Operation', 'Simulating folder show...')" class="text-xs text-yellow-500 hover:text-yellow-400 flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg> Show
+                                </button>
+                            </div>
+                        </div>
+                        <button onclick="this.closest('.download-item').remove()" class="text-gray-500 hover:text-gray-300 transition duration-150" title="Remove">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                        </button>
+                    </div>
+                `;
+            }
+
+            // --- Event Handlers ---
+
+            clearHistoryBtn.addEventListener('click', () => {
+                recentDownloadsList.innerHTML = '';
+                showModal('History Cleared', 'The recent download list has been cleared.');
+            });
+
+            document.getElementById('select-folder-btn').addEventListener('click', () => {
+                showModal('Folder Selection', 'In a real application, a system file dialog would open here.');
+            });
+
+            downloadButton.addEventListener('click', simulateDownload);
+
+
+            // --- Core Simulation Logic ---
+
+            async function simulateDownload() {
+                const url = urlInput.value.trim();
+                if (!url) {
+                    showModal('Error', 'Please enter a valid YouTube URL.');
+                    return;
+                }
+
+                const selectedFormat = formatSelect.value;
+                const formatLabel = mockVideoData.formats[selectedFormat];
+                const simulatedSize = (parseFloat(mockVideoData.size) * (Math.random() * 0.5 + 0.75)).toFixed(1);
+
+                // 1. Disable button and show loading state
+                downloadButton.disabled = true;
+                downloadText.textContent = 'Downloading... (Simulated)';
+                downloadIcon.innerHTML = `<svg class="animate-spin h-5 w-5 mr-2 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+
+                // 2. Simulate API Call delay (3 seconds)
+                await new Promise(resolve => setTimeout(resolve, 3000));
+
+                // 3. Simulate success
+                
+                // Construct the new download item HTML
+                const newItemHtml = createDownloadItem(
+                    mockVideoData.title, 
+                    formatLabel, 
+                    simulatedSize, 
+                    mockVideoData.date
+                );
+                
+                // Add new item to the start of the list
+                recentDownloadsList.insertAdjacentHTML('afterbegin', newItemHtml);
+
+                // 4. Reset UI
+                downloadButton.disabled = false;
+                downloadText.textContent = 'Download';
+                downloadIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`;
+
+                showModal('Download Complete (Simulated)', `"${mockVideoData.title}" has been added to your recent downloads.`);
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Structura Web</title>
 <style>
-    body { font-family: Arial, sans-serif; background: #1e1e1e; color: #ddd; padding: 20px; }
-    textarea { width: 100%; height: 200px; background: #2e2e2e; color: #ddd; border: none; padding: 10px; font-family: monospace; }
-    ul { list-style-type: none; padding-left: 20px; }
-    li { cursor: pointer; }
-    .folder::before { content: "📁 "; }
-    .hidden { display: none; }
-    button { padding: 10px 15px; margin-top: 10px; background: #444; color: #ddd; border: none; cursor: pointer; }
+body { font-family: Arial, sans-serif; background: #1e1e1e; color: #ddd; padding: 20px; }
+textarea { width: 100%; height: 200px; background: #2e2e2e; color: #ddd; border: none; padding: 10px; font-family: monospace; }
+ul { list-style-type: none; padding-left: 20px; }
+li { cursor: pointer; }
+.folder::before { content: "📁 "; }
+.hidden { display: none; }
+button { padding: 10px 15px; margin-top: 10px; background: #444; color: #ddd; border: none; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <h1>Structura Web</h1>
-<textarea id="input" placeholder="Enter folder structure here..."></textarea>
+<textarea id="input" placeholder="Enter folder structure here using [ ] and ->"></textarea>
 <button onclick="generateTree()">Generate Tree</button>
 <div id="tree"></div>
 
@@ -25,16 +25,31 @@
 function parseStructura(input) {
     const lines = input.split('\n').filter(line => line.trim() !== '');
     const root = [];
-    const stack = [{level: -1, children: root}];
+    const stack = [{level: 0, children: root}];
 
     lines.forEach(line => {
-        const match = line.match(/^(\-+|->+|>+)?(.*)$/);
-        if (!match) return;
-        let level = match[1] ? match[1].length : 0;
-        let name = match[2].trim().replace(/[<>[\]]/g, '');
+        const trimmed = line.trim();
+        let level = 0;
+        let name = '';
+
+        // Main folder
+        if (trimmed.startsWith('[') && trimmed.endsWith(']')) {
+            name = trimmed.slice(1, -1).trim();
+            level = 0;
+        } 
+        // Subfolder
+        else if (trimmed.startsWith('->')) {
+            const arrowMatch = trimmed.match(/^(->)+/);
+            level = arrowMatch[0].length;
+            name = trimmed.slice(level).trim();
+        } 
+        else return; // Ignore invalid lines
+
         const node = { name, children: [] };
 
+        // Pop stack until we find the parent level
         while (stack.length && stack[stack.length - 1].level >= level) stack.pop();
+
         stack[stack.length - 1].children.push(node);
         stack.push({level, children: node.children});
     });
@@ -43,7 +58,7 @@ function parseStructura(input) {
 }
 
 function buildTreeHTML(nodes) {
-    if (!nodes || nodes.length === 0) return '';
+    if (!nodes || nodes.length === 0) return null;
     const ul = document.createElement('ul');
     nodes.forEach(node => {
         const li = document.createElement('li');
@@ -67,7 +82,7 @@ function generateTree() {
     const treeContainer = document.getElementById('tree');
     treeContainer.innerHTML = '';
     const treeHTML = buildTreeHTML(structure);
-    treeContainer.appendChild(treeHTML);
+    if (treeHTML) treeContainer.appendChild(treeHTML);
 }
 </script>
 

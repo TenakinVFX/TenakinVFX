@@ -6,19 +6,27 @@
 <title>Structura Web</title>
 <style>
 body { font-family: Arial, sans-serif; background: #1e1e1e; color: #ddd; padding: 20px; }
-textarea { width: 100%; height: 200px; background: #2e2e2e; color: #ddd; border: none; padding: 10px; font-family: monospace; }
+h1 { text-align: center; margin-bottom: 20px; }
+textarea { width: 100%; height: 200px; background: #2e2e2e; color: #ddd; border: none; padding: 10px; font-family: monospace; margin-bottom: 10px; resize: vertical; }
 ul { list-style-type: none; padding-left: 20px; }
-li { cursor: pointer; }
+li { cursor: pointer; padding: 2px 0; user-select: none; }
 .folder::before { content: "📁 "; }
 .hidden { display: none; }
-button { padding: 10px 15px; margin-top: 10px; background: #444; color: #ddd; border: none; cursor: pointer; }
+button { padding: 10px 15px; margin: 5px 5px 15px 0; background: #444; color: #ddd; border: none; cursor: pointer; border-radius: 5px; }
+button:hover { background: #555; }
+#tree { margin-top: 10px; }
+@media (max-width: 600px) {
+    textarea { height: 150px; }
+    button { width: 100%; margin-bottom: 10px; }
+}
 </style>
 </head>
 <body>
 
 <h1>Structura Web</h1>
-<textarea id="input" placeholder="Enter folder structure here using [ ] and ->"></textarea>
+<textarea id="input" placeholder="Enter folder structure here using [ ] for main folders and -> for subfolders"></textarea><br>
 <button onclick="generateTree()">Generate Tree</button>
+<button onclick="createStructure()">Create & Download .struct</button>
 <div id="tree"></div>
 
 <script>
@@ -43,11 +51,10 @@ function parseStructura(input) {
             level = arrowMatch[0].length;
             name = trimmed.slice(level).trim();
         } 
-        else return; // Ignore invalid lines
+        else return;
 
         const node = { name, children: [] };
 
-        // Pop stack until we find the parent level
         while (stack.length && stack[stack.length - 1].level >= level) stack.pop();
 
         stack[stack.length - 1].children.push(node);
@@ -83,6 +90,20 @@ function generateTree() {
     treeContainer.innerHTML = '';
     const treeHTML = buildTreeHTML(structure);
     if (treeHTML) treeContainer.appendChild(treeHTML);
+}
+
+// Create & download as .struct
+function createStructure() {
+    const input = document.getElementById('input').value;
+    const structure = parseStructura(input);
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(structure, null, 2));
+    const dlAnchor = document.createElement('a');
+    dlAnchor.setAttribute("href", dataStr);
+    dlAnchor.setAttribute("download", "folder-structure.struct");
+    document.body.appendChild(dlAnchor);
+    dlAnchor.click();
+    dlAnchor.remove();
+    alert("Folder structure .struct file created!");
 }
 </script>
 

@@ -461,6 +461,154 @@
             }
             renderTabs();
             renderBookmarks();
+            checkBackupReminder();
+        }
+
+        // Backup Reminder System
+        function checkBackupReminder() {
+            const lastBackup = localStorage.getItem('lynkr-last-backup');
+            const now = Date.now();
+            const sevenDays = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
+            
+            if (!lastBackup || (now - parseInt(lastBackup)) > sevenDays) {
+                // Only show if user has bookmarks
+                const totalBookmarks = appState.tabs.reduce((sum, tab) => {
+                    return sum + Object.values(tab.groups || {}).reduce((gSum, group) => {
+                        return gSum + (group.bookmarks?.length || 0);
+                    }, 0);
+                }, 0);
+                
+                if (totalBookmarks > 0) {
+                    setTimeout(() => showBackupReminder(), 2000); // Show after 2 seconds
+                }
+            }
+        }
+
+        function showBackupReminder() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal" style="max-width: 450px;">
+                    <h3 class="modal-title">💾 Backup Reminder</h3>
+                    <p style="color: #ccc; margin-bottom: 16px; line-height: 1.5;">
+                        It's been a while since your last backup! Protect your ${getTotalBookmarksCount()} bookmarks by exporting them.
+                    </p>
+                    <p style="color: #999; font-size: 12px; margin-bottom: 20px;">
+                        💡 Tip: Bookmarks are saved in your browser, but can be lost if you clear cache or switch devices.
+                    </p>
+                    <div class="modal-buttons">
+                        <button class="btn btn-secondary" onclick="dismissBackupReminder(30)">
+                            Remind me in 30 days
+                        </button>
+                        <button class="btn btn-secondary" onclick="dismissBackupReminder(7)">
+                            Remind me in 7 days
+                        </button>
+                        <button class="btn btn-primary" onclick="backupNow()">
+                            📤 Backup Now
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Close on background click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    dismissBackupReminder(7);
+                }
+            });
+        }
+
+        function dismissBackupReminder(days) {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) modal.remove();
+            
+            const now = Date.now();
+            const delayMs = days * 24 * 60 * 60 * 1000;
+            localStorage.setItem('lynkr-last-backup', (now + delayMs - (7 * 24 * 60 * 60 * 1000)).toString());
+        }
+
+        function backupNow() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) modal.remove();
+            
+            // Mark as backed up
+            localStorage.setItem('lynkr-last-backup', Date.now().toString());
+            
+            // Export all tabs
+            exportAllTabs();
+        }
+
+        function getTotalBookmarksCount() {
+            return appState.tabs.reduce((sum, tab) => {
+                return sum + Object.values(tab.groups || {}).reduce((gSum, group) => {
+                    return gSum + (group.bookmarks?.length || 0);
+                }, 0);
+            }, 0);
+        }
+
+        function exportAllTabs() {
+            if (appState.tabs.length === 0) {
+                alert('No tabs to export!');
+                return;
+            }
+            
+            if (appState.tabs.length === 1) {
+                // Just export the single tab
+                exportCurrentTab();
+                alert('✅ Backup complete! Your bookmarks are safe.');
+                return;
+            }
+            
+            // If multiple tabs, let user choose
+            const choice = confirm(`You have ${appState.tabs.length} tabs.\n\nOK = Export current tab only\nCancel = Export all tabs separately`);
+            
+            if (choice) {
+                exportCurrentTab();
+                alert('✅ Backup complete! Current tab exported.');
+            } else {
+                // Export each tab
+                appState.tabs.forEach(tab => {
+                    const data = {
+                        Name: tab.name,
+                        TabColor: tab.tabColor,
+                        Groups: Object.entries(tab.groups).map(([name, group]) => ({
+                            Name: name,
+                            HeaderColor: group.headerColor,
+                            BackgroundColor: group.backgroundColor,
+                            IsCollapsed: group.isCollapsed,
+                            Order: group.order,
+                            Bookmarks: (group.bookmarks || []).map(b => ({
+                                Title: b.title,
+                                Url: b.url,
+                                ThumbnailUrl: b.thumbnailUrl,
+                                DateAdded: b.dateAdded,
+                                BackgroundColor: b.backgroundColor
+                            }))
+                        })),
+                        name: tab.name,
+                        tabColor: tab.tabColor,
+                        groups: Object.entries(tab.groups).map(([name, group]) => ({
+                            name,
+                            headerColor: group.headerColor,
+                            backgroundColor: group.backgroundColor,
+                            isCollapsed: group.isCollapsed,
+                            order: group.order,
+                            bookmarks: group.bookmarks
+                        }))
+                    };
+                    
+                    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${tab.name}.lynk`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                });
+                
+                alert(`✅ Backup complete! Exported all ${appState.tabs.length} tabs.`);
+            }
         }
 
         // Storage

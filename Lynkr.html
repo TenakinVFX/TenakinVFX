@@ -754,36 +754,65 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     
-                    let tabName = data.name;
+                    console.log('Imported data:', data); // Debug log
+                    
+                    // Handle both tab export format and potential other formats
+                    let tabName = data.Name || data.name || 'Imported Tab';
+                    let tabColor = data.TabColor || data.tabColor || '#2A4D6A';
+                    let groupsData = data.Groups || data.groups || [];
+                    
                     let counter = 1;
+                    const originalName = tabName;
                     while (appState.tabs.some(t => t.name === tabName)) {
                         counter++;
-                        tabName = `${data.name} (${counter})`;
+                        tabName = `${originalName} (${counter})`;
                     }
                     
                     const newTab = {
                         name: tabName,
-                        tabColor: data.tabColor || '#2A4D6A',
-                        groups: (data.groups || []).reduce((acc, group) => {
-                            acc[group.name] = {
-                                headerColor: group.headerColor || '#2A2A2A',
-                                backgroundColor: group.backgroundColor || '#1A1A1A',
-                                isCollapsed: group.isCollapsed || false,
-                                order: group.order || 0,
-                                bookmarks: group.bookmarks || []
-                            };
-                            return acc;
-                        }, {})
+                        tabColor: tabColor,
+                        groups: {}
                     };
+                    
+                    // Process groups
+                    if (Array.isArray(groupsData)) {
+                        groupsData.forEach((group, index) => {
+                            const groupName = group.Name || group.name || `Group ${index + 1}`;
+                            newTab.groups[groupName] = {
+                                headerColor: group.HeaderColor || group.headerColor || '#2A2A2A',
+                                backgroundColor: group.BackgroundColor || group.backgroundColor || '#1A1A1A',
+                                isCollapsed: group.IsCollapsed || group.isCollapsed || false,
+                                order: group.Order !== undefined ? group.Order : (group.order !== undefined ? group.order : index),
+                                bookmarks: []
+                            };
+                            
+                            // Process bookmarks
+                            const bookmarksData = group.Bookmarks || group.bookmarks || [];
+                            if (Array.isArray(bookmarksData)) {
+                                bookmarksData.forEach(bookmark => {
+                                    newTab.groups[groupName].bookmarks.push({
+                                        title: bookmark.Title || bookmark.title || 'Untitled',
+                                        url: bookmark.Url || bookmark.url || '',
+                                        thumbnailUrl: bookmark.ThumbnailUrl || bookmark.thumbnailUrl || '',
+                                        dateAdded: bookmark.DateAdded || bookmark.dateAdded || new Date().toISOString(),
+                                        backgroundColor: bookmark.BackgroundColor || bookmark.backgroundColor || '#252525'
+                                    });
+                                });
+                            }
+                        });
+                    }
                     
                     appState.tabs.push(newTab);
                     appState.currentTab = newTab;
                     saveToStorage();
                     renderTabs();
                     renderBookmarks();
-                    alert(`Imported ${Object.keys(newTab.groups).length} groups!`);
+                    
+                    const totalBookmarks = Object.values(newTab.groups).reduce((sum, g) => sum + g.bookmarks.length, 0);
+                    alert(`Imported ${Object.keys(newTab.groups).length} groups with ${totalBookmarks} bookmarks!`);
                 } catch (error) {
-                    alert('Error importing file: ' + error.message);
+                    console.error('Import error:', error);
+                    alert('Error importing file: ' + error.message + '\n\nCheck console for details.');
                 }
             };
             reader.readAsText(file);

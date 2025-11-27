@@ -719,7 +719,26 @@
         function exportCurrentTab() {
             if (!appState.currentTab) return;
             
+            // Export in BOTH formats for maximum compatibility
             const data = {
+                // PascalCase for C# WPF compatibility
+                Name: appState.currentTab.name,
+                TabColor: appState.currentTab.tabColor,
+                Groups: Object.entries(appState.currentTab.groups).map(([name, group]) => ({
+                    Name: name,
+                    HeaderColor: group.headerColor,
+                    BackgroundColor: group.backgroundColor,
+                    IsCollapsed: group.isCollapsed,
+                    Order: group.order,
+                    Bookmarks: (group.bookmarks || []).map(b => ({
+                        Title: b.title,
+                        Url: b.url,
+                        ThumbnailUrl: b.thumbnailUrl,
+                        DateAdded: b.dateAdded,
+                        BackgroundColor: b.backgroundColor
+                    }))
+                })),
+                // camelCase for web version compatibility (fallback)
                 name: appState.currentTab.name,
                 tabColor: appState.currentTab.tabColor,
                 groups: Object.entries(appState.currentTab.groups).map(([name, group]) => ({
